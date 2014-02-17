@@ -23,10 +23,12 @@ RUN apt-get install -y python-sqlalchemy python-sqlalchemy-ext
 # Next, grab the main and tools branches from git
 # Use my docker branch until it gets merged into master.
 ADD . /root/appscale
-RUN git clone git://github.com/AppScale/appscale-tools /root/appscale-tools
 
 # Install main
 RUN bash /root/appscale/debian/appscale_build.sh
+
+RUN git clone git://github.com/AppScale/appscale-tools /root/appscale-tools
+RUN cd /root/appscale-tools && git checkout 1.12.0
 
 # Install the tools
 RUN bash /root/appscale-tools/debian/appscale_build.sh
