@@ -6,6 +6,7 @@ FROM      ubuntu
 MAINTAINER Chris Bunch <chris@appscale.com>
 
 # First, install git
+RUN apt-get update
 RUN apt-get install -y git-core
 
 # Next, grab the main and tools branches from git
