@@ -11,7 +11,7 @@ RUN apt-get install -y git-core
 
 # Next, grab the main and tools branches from git
 # Use my docker branch until it gets merged into master.
-RUN git clone git://github.com/shatterednirvana/appscale -b docker /root/appscale
+ADD . /root/appscale
 RUN git clone git://github.com/AppScale/appscale-tools /root/appscale-tools
 
 # Install main
