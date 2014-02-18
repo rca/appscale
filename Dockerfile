@@ -55,3 +55,13 @@ RUN git clone git://github.com/AppScale/appscale-tools /root/appscale-tools
 RUN cd /root/appscale-tools && git checkout 1.12.0
 
 RUN bash /root/appscale-tools/debian/appscale_build.sh
+
+
+# Add packages to daemonize container
+RUN apt-get -y install supervisor
+
+RUN pip install jinja2
+
+EXPOSE 80 443 1080
+
+CMD /usr/bin/run

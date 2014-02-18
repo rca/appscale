@@ -1,0 +1,12 @@
+#!/bin/bash
+
+APPSCALE_PASSWORD=${APPSCALE_PASSWORD:-appscale}
+
+echo "root:${APPSCALE_PASSWORD}" | chpasswd
+
+cd /appscale
+
+appscale up
+
+# fire up processes via supervisor
+exec /usr/bin/supervisord -n
