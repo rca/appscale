@@ -2,11 +2,10 @@
 
 set -e
 
-cat >> /etc/apt/sources.list << EOF
-deb http://archive.ubuntu.com/ubuntu precise main restricted universe multiverse
-deb http://archive.ubuntu.com/ubuntu precise-updates main restricted universe
-deb http://security.ubuntu.com/ubuntu precise-security main restricted universe
-EOF
+sed -i \
+  -e 's,\(deb http://archive.ubuntu.com/ubuntu precise main \).*,\1 restricted universe multiverse,' \
+  -e 's,\(deb http://archive.ubuntu.com/ubuntu precise-updates main \).*,\1 restricted universe,' \
+  -e 's,\(deb http://security.ubuntu.com/ubuntu precise-security main \).*,\1 restricted universe,' /etc/apt/sources.list
 
 apt-get -y install lsb-release sudo vim language-pack-en-base
 dpkg-reconfigure locales
@@ -104,6 +103,8 @@ fi
 
 # remove conflict package
 apt-get -y purge haproxy
+
+
 if [ $1 ]; then
     echo "Installing AppScale with $1 as the only supported database."
     bash debian/appscale_install.sh core || exit 1
