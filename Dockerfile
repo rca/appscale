@@ -24,15 +24,34 @@ RUN apt-get install -y bind9-host cron dnsutils ejabberd erlang-nox geoip-databa
 RUN apt-get install -y python-sqlalchemy python-sqlalchemy-ext
 
 
-# Next, grab the main and tools branches from git
-# Use my docker branch until it gets merged into master.
-ADD . /root/appscale
+# setup base environment needed to properly install
+ENV HOME /root
+ENV USER root
 
-# Install main
+
+# Next, add the bare minimum needed to build appscale
+ADD AppDashboard/setup /root/appscale/AppDashboard/setup
+ADD AppDB /root/appscale/AppDB
+ADD AppServer_Java /root/appscale/AppServer_Java
+ADD appscale-controller.sh /root/appscale/appscale-controller.sh
+ADD appscale-progenitor.sh /root/appscale/appscale-progenitor.sh
+ADD gemrc /root/.gemrc
+ADD monit /root/appscale/monit
+ADD monitrc /root/appscale/monitrc
+ADD debian /root/appscale/debian
+ADD VERSION /root/appscale/VERSION
+
+
+# Install AppScale
 RUN bash /root/appscale/debian/appscale_build.sh
 
+
+# Add remaining files
+ADD . /root/appscale
+
+
+# Install the tools
 RUN git clone git://github.com/AppScale/appscale-tools /root/appscale-tools
 RUN cd /root/appscale-tools && git checkout 1.12.0
 
-# Install the tools
 RUN bash /root/appscale-tools/debian/appscale_build.sh
