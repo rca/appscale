@@ -1,12 +1,14 @@
 #!/bin/bash
-
 APPSCALE_PASSWORD=${APPSCALE_PASSWORD:-appscale}
+
+# these will not be sourced by .bashrc because this is executed non-interactively
+export TOOLS_PATH=/usr/local/appscale-tools
+export PATH=${PATH}:${TOOLS_PATH}/bin
 
 echo "root:${APPSCALE_PASSWORD}" | chpasswd
 
-cd /appscale
-
-appscale up
+# run this in the background so that supervisor has a chance to start SSH
+(sleep 5; cd /appscale && appscale up) &
 
 # fire up processes via supervisor
 exec /usr/bin/supervisord -n
