@@ -8,10 +8,16 @@ MAINTAINER Chris Bunch <chris@appscale.com>
 # First, add repositories to APT
 RUN sed -i -e 's,\(deb http://archive.ubuntu.com/ubuntu precise main \).*,\1 restricted universe multiverse,' -e 's,\(deb http://archive.ubuntu.com/ubuntu precise-updates main \).*,\1 restricted universe,' -e 's,\(deb http://security.ubuntu.com/ubuntu precise-security main \).*,\1 restricted universe,' /etc/apt/sources.list
 
-
-# Install base packages
 RUN apt-get update
 
+
+# Add packages to daemonize container
+RUN apt-get -y install python python-pip supervisor unzip zip
+
+RUN pip install jinja2
+
+
+# Install base packages
 RUN apt-get install -y ant autoconf automake bison build-essential byacc bzip2 ca-certificates cmake curl debhelper dh-make dpkg-dev erlang fakeroot firefox-locale-en flex g++ gcc git git-core git-man krb5-locales language-pack-en language-pack-en-base language-pack-en-base libasn1-8-heimdal libbsd0 libbz2-dev libc6-dev libclass-isa-perl libcppunit-dev libcurl3-gnutls libedit2 liberror-perl libevent-dev libexpat1-dev libgcrypt11 libgdbm3 libgnutls26 libgpg-error0 libgpm2 libgssapi-krb5-2 libgssapi3-heimdal libhcrypto4-heimdal libheimbase1-heimdal libheimntlm0-heimdal libhx509-5-heimdal libidn11 libk5crypto3 libkeyutils1 libkrb5-26-heimdal libkrb5-3 libkrb5support0 libldap-2.4-2 libp11-kit0 libpython2.7 libreadline-dev libroken18-heimdal librtmp0 libsasl2-2 libsasl2-modules libssl-dev libswitch-perl libtasn1-3 libtool libwind0-heimdal libx11-6 libx11-data libxau6 libxcb1 libxdmcp6 libxext6 libxml2-dev libxmuu1 locales lsb-release maven2 ntp openssh-client openssl patch perl perl-base perl-modules pkg-config python-dev python2.7 python2.7-minimal rsync rsync ruby1.8-dev subversion sudo unzip vim vim vim-common vim-runtime vim-tiny wget xauth zlib1g-dev
 
 # remove conflict package
@@ -54,14 +60,19 @@ ADD . /root/appscale
 RUN git clone git://github.com/AppScale/appscale-tools /root/appscale-tools
 RUN cd /root/appscale-tools && git checkout 1.12.0
 
-RUN bash /root/appscale-tools/debian/appscale_build.sh
+RUN chmod +x /root/appscale-tools/debian/appscale_build.sh
+RUN /root/appscale-tools/debian/appscale_build.sh
 
 
-# Add packages to daemonize container
-RUN apt-get -y install supervisor
+# Add files needed to daemonize container
+ADD files/ /
 
-RUN pip install jinja2
+RUN chmod +x /usr/bin/run
 
-EXPOSE 80 443 1080
 
+# expose ports to the host system
+EXPOSE 80 443 1080 1443
+
+
+# launch the run script
 CMD /usr/bin/run
